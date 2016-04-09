@@ -1,16 +1,17 @@
 var gulp = require('gulp');
 var $ = require("gulp-load-plugins")();
+var runSequence = require("run-sequence");
 
 var path = {
     md: "docs/apis/*.md",
-    indexFile: "index.md",
+    indexFile: "index.apib",
     indexPath: "docs/",
     sitePath: "site/"
 }
 
 gulp.task('build-md', function () {
     gulp.src(path.md)
-        .pipe($.concat("index.md"))
+        .pipe($.concat(path.indexFile))
         .pipe(gulp.dest(path.indexPath));
 });
 
@@ -20,7 +21,12 @@ gulp.task('build-aglio', function () {
         .pipe(gulp.dest(path.sitePath));
 });
 
+gulp.task("build",function(cb){
+    runSequence("build-md","build-aglio",cb);
+})
+
 gulp.task("watch",function(){
+    gulp.watch(path.md,["build-md"])
     gulp.watch(path.md,["build-md"])
 })
 
